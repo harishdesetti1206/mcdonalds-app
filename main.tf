@@ -18,5 +18,5 @@ terraform {
 
 provider "kubernetes" {
   config_path    = "~/.kube/config"
-  config_context = "k8s-autoscaling-cluster"
+  config_context = "arn:aws:eks:us-east-1:286824333895:cluster/k8s-autoscaling-cluster"
 }
