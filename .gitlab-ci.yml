@@ -15,6 +15,7 @@ before_script:
 - aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
 - aws configure set region $AWS_DEFAULT_REGION
 - aws eks --region us-east-1 update-kubeconfig --name k8s-autoscaling-cluster
+- export KUBE_CONFIG_PATH=~/.kube/config
 
 
 # gitlab config
