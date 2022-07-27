@@ -1,6 +1,6 @@
 resource "kubernetes_namespace" "demoapp" {
   metadata {
-    name = "demoapp"
+    name   = "demoapp"
     labels = {}
   }
 }
@@ -16,12 +16,11 @@ resource "helm_release" "demoapp" {
   force_update     = false
   wait             = true
 
-#   set {
-#     name  = ""
-#     value = ""
-#   }
+  #   set {
+  #     name  = ""
+  #     value = ""
+  #   }
 
-#   depends_on = [
-    
-#   ]
+  depends_on = [kubernetes_namespace.demoapp]
 }
+

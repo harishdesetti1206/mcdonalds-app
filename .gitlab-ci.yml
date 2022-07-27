@@ -1,0 +1,83 @@
+image:
+  name: zenika/terraform-aws-cli
+
+stages:
+  - plan
+  - apply
+
+variables:
+  TERRAFORM_DESTROY: "false"
+
+before_script:
+- export GITLAB_TOKEN=$gitlabtoken
+- export GITLAB_USERNAME=$gitlabusername
+- aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+- aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+- aws configure set region $AWS_DEFAULT_REGION
+- aws eks --region us-east-1 update-kubeconfig --name k8s-autoscaling-cluster
+
+
+# gitlab config
+- git config user.email $gitlabusername
+- git config user.name $gitlabusername
+- echo 'echo $gitlabtoken' > .git-askpass
+- chmod +x .git-askpass
+- export GIT_ASKPASS=$(pwd)/.git-askpass
+
+
+# terraform
+#- tfswitch
+- terraform --version
+- terraform init -no-color -input=false
+
+terraform_plan:
+  stage: plan
+  script:
+    - terraform fmt -check=true -diff=true
+    - terraform validate -no-color
+    - terraform plan -no-color -out=tfplan -input=false
+    - terraform show -json tfplan > tfplan.json
+  artifacts:
+    paths:
+      - tfplan
+      - tfplan.json
+  only:
+    variables:
+      - $TERRAFORM_DESTROY == "false"
+
+
+terraform_apply:
+  stage: apply
+  script:
+    - terraform apply -input=false "tfplan"
+  dependencies:
+    - terraform_plan
+  allow_failure: false
+  when: manual
+  only:
+    variables:
+      - $TERRAFORM_DESTROY == "false"
+
+terraform_destroy_plan:
+  stage: plan
+  script:
+    - terraform fmt -check=true -diff=true
+    - terraform validate -no-color
+    - terraform plan -no-color -destroy -input=false
+  only:
+    variables:
+      - $TERRAFORM_DESTROY == "true"
+
+
+terraform_destroy:
+  stage: apply
+  script:
+    - terraform destroy -auto-approve
+  dependencies:
+    - terraform_destroy_plan
+  allow_failure: false
+  when: manual
+  only:
+    variables:
+      - $TERRAFORM_DESTROY == "true"
+
