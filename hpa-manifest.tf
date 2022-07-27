@@ -38,7 +38,7 @@ apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
 metadata:
   name: ecsdemo-frontend
-  namespace: "{{ kubernetes_namespace.demoapp.metadata[0].name }}"
+  namespace: demoapp
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
