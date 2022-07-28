@@ -17,9 +17,9 @@ terraform {
   required_version = ">= 1.1.2"
 
   backend "s3" {
-    bucket = "hdesettistatefiles"
-    key    = "k8s/cluster/k8s-autoscaling-cluster/mcdonaldapp/key/terraform.tfstate"
-    region = "us-east-1"
+    bucket         = "hdesettistatefiles"
+    key            = "k8s/cluster/k8s-autoscaling-cluster/mcdonaldapp/key/terraform.tfstate"
+    region         = "us-east-1"
     dynamodb_table = "dynamodb-state-locking-mcdonaldapp"
   }
 }
